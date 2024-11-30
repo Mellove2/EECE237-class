@@ -1,0 +1,357 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         ; main.s
+    2 00000000         ; Runs on any Cortex M processor
+    3 00000000         ; Activity_05
+    4 00000000         ; MEMORY OPERATIONS
+    5 00000000         ;
+    6 00000000         ; Author: Mel Manuel
+    7 00000000         ; Date Created: 11/6/2024
+    8 00000000         ; Date Modified: 11/6/2024
+    9 00000000         ; Insert a brief description of your program solution he
+                       re 
+   10 00000000         ; Lab number and lab partner if applicable 
+   11 00000000         ; list all inputs and outputs here.
+   12 00000000         
+   13 00000000         ; we align 32 bit variables to 32-bits
+   14 00000000         ; we align op codes to 16 bits
+   15 00000000         
+   16 00000000         ;------ DO NOT MODIFY OR REMOVE THIS SECTION -----------
+                       ----      
+   17 00000000                 THUMB
+   18 00000000                 AREA             DATA, ALIGN=4
+   19 00000000         ;       GET tm4c123gh6pm.s
+   20 00000000                 ALIGN
+   21 00000000         ;-------------------------------------------------------
+                       ----
+   22 00000000 00516155 
+                       ONESEC  DCD              5333333     ; approximately 1s 
+                                                            delay at ~16 MHz cl
+                                                            ock
+   23 00000004 00145855 
+                       QUARTERSEC
+                               DCD              1333333     ; approximately 0.2
+                                                            5s delay at ~16 MHz
+                                                             clock
+   24 00000008 001046AA 
+                       FIFTHSEC
+                               DCD              1066666     ; approximately 0.2
+                                                            s delay at ~16 MHz 
+                                                            clock
+   25 0000000C         
+   26 0000000C         ; memory addresses for Port F control registers. 
+   27 0000000C         
+   28 0000000C 400253FC 
+                       GPIO_PORTF_DATA_R
+                               EQU              0x400253FC
+   29 0000000C 40025400 
+                       GPIO_PORTF_DIR_R
+                               EQU              0x40025400
+   30 0000000C 4002551C 
+                       GPIO_PORTF_DEN_R
+                               EQU              0x4002551C
+   31 0000000C         
+   32 0000000C         ; System control register use either one to turn on the 
+                       clock for any port
+   33 0000000C         
+   34 0000000C 400FE118 
+                       SYSCTL_SCGC2_R
+                               EQU              0x400FE118
+   35 0000000C         
+   36 0000000C 400FE608 
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+                       SYSCTL_RCGCGPIO_R
+                               EQU              0x400FE608
+   37 0000000C         
+   38 0000000C         ;; Delcare global variables here if needed
+   39 0000000C         
+   40 0000000C         
+   41 0000000C         ;;------------ DO NOT MODIFY OR REMOVE THIS SECTION-----
+                       -------
+   42 0000000C                 AREA             |.text|, CODE, READONLY, ALIGN=
+2
+   43 00000000         ;      GET tm4c123gh6pm.s
+   44 00000000                 EXPORT           Start
+   45 00000000         ;;------------------------------------------------------
+                       ------
+   46 00000000         
+   47 00000000         
+   48 00000000         Start   proc                         ; DO NOT MODIFY THI
+                                                            S LINE. THIS MARKS 
+                                                            THE START OF YOUR A
+                                                            SSEMBLY PROGRAM.
+   49 00000000         
+   50 00000000         ; board initialization here 
+   51 00000000         ; insert all pins initilization code here before enterin
+                       g the main endless loop.
+   52 00000000         
+   53 00000000         ;turn on port : port F 
+   54 00000000 4822            LDR              R0, =SYSCTL_RCGCGPIO_R
+   55 00000002 6801            LDR              R1, [R0]
+   56 00000004 F041 0120       ORR              R1, #0x20
+   57 00000008 6001            STR              R1, [R0]
+   58 0000000A         
+   59 0000000A         ;wait
+   60 0000000A BF00            NOP
+   61 0000000C BF00            NOP
+   62 0000000E BF00            NOP
+   63 00000010         
+   64 00000010         ;enable pins : PF1, PF2, and PF3
+   65 00000010 4A1F            LDR              R2, =GPIO_PORTF_DEN_R
+   66 00000012 F8D2 8000       LDR              R8, [R2]
+   67 00000016 F048 080E       ORR              R8, #0x0E
+   68 0000001A F8C2 8000       STR              R8, [R2]
+   69 0000001E         
+   70 0000001E         ;Configure directon (input/output) : make PF1,PF2,PF3 ou
+                       tput
+   71 0000001E 4E1D            LDR              R6, =GPIO_PORTF_DIR_R
+   72 00000020 6837            LDR              R7, [R6]
+   73 00000022 F047 070E       ORR              R7, #0x0E
+   74 00000026 6037            STR              R7, [R6]
+   75 00000028         
+   76 00000028         
+   77 00000028         
+   78 00000028         
+   79 00000028         
+   80 00000028         
+   81 00000028         loop
+   82 00000028         ; main program loop
+   83 00000028         ; insert your code here
+   84 00000028         
+   85 00000028         ;SHIFT OPERATIONS
+
+
+
+ARM Macro Assembler    Page 3 
+
+
+   86 00000028 4E1B            LDR              R6, =GPIO_PORTF_DATA_R
+   87 0000002A F8D6 9000       LDR              R9, [R6]
+   88 0000002E F04F 0903       MOV              R9, #0x03   ;can't use R4 since
+                                                             its in delay funct
+                                                            ion ;;gives red
+   89 00000032 EA4F 0989       LSL              R9, #2      ;gives sky blue  
+   90 00000036 F8C6 9000       STR              R9,[R6]
+   91 0000003A         
+   92 0000003A F000 F821       BL               delay       ;delay
+   93 0000003E         
+   94 0000003E         ;pink
+   95 0000003E EA4F 0959       LSR              R9, #1      ;gives pink 
+   96 00000042 F8C6 9000       STR              R9, [R6]
+   97 00000046         
+   98 00000046 F000 F81B       BL               delay
+   99 0000004A         
+  100 0000004A EA4F 0989       LSL              R9, #2      ;gives green
+  101 0000004E F8C6 9000       STR              R9, [R6]
+  102 00000052         
+  103 00000052 F000 F815       BL               delay
+  104 00000056         
+  105 00000056 EA4F 09D9       LSR              R9, #3      ;give red
+  106 0000005A F8C6 9000       STR              R9, [R6]
+  107 0000005E         
+  108 0000005E F000 F80F       BL               delay
+  109 00000062         
+  110 00000062 EA4F 0959       LSR              R9, #1      ;gives black
+  111 00000066 F8C6 9000       STR              R9, [R6]
+  112 0000006A         
+  113 0000006A         ;to make off look off more
+  114 0000006A F000 F809       BL               delay
+  115 0000006E F000 F807       BL               delay
+  116 00000072 F000 F805       BL               delay
+  117 00000076 F000 F803       BL               delay
+  118 0000007A F000 F801       BL               delay
+  119 0000007E         
+  120 0000007E         
+  121 0000007E         
+  122 0000007E E7D3            B                loop        ; do not modify or 
+                                                            delete this line. 
+  123 00000080         
+  124 00000080         
+  125 00000080         ;-------------DO NOT MODIFY ANY LINES BELOW THIS SECTION
+                       ------------
+  126 00000080         ;------------delay------------
+  127 00000080         ; Delay function for testing, which delays about 3*count
+                        cycles.
+  128 00000080         ; Input: R0  count
+  129 00000080         ; Output: none
+  130 00000080         
+  131 00000080         delay
+  132 00000080 4B06            LDR              R3, = ONESEC
+  133 00000082 681C            LDR              R4, [R3]
+  134 00000084 1E64    d       SUBS             R4, R4, #1  ; R0 = R0 - 1 (coun
+                                                            t = count - 1)
+  135 00000086 D1FD            BNE              d           ; if count (R0) != 
+                                                            0, skip to 'd'
+  136 00000088 4770            BX               LR          ; return
+  137 0000008A         
+
+
+
+ARM Macro Assembler    Page 4 
+
+
+  138 0000008A 00 00           ALIGN
+  139 0000008C                 ENDP
+  140 0000008C                 END
+              400FE608 
+              4002551C 
+              40025400 
+              400253FC 
+              00000000 
+Command Line: --debug --xref --diag_suppress=9931,A1950W --cpu=Cortex-M4 --fpu=
+SoftVFP --depend=.\display.d -o.\display.o -I.\RTE\_Activity_7 -I"C:\Users\Cook
+i\OneDrive\Desktop\EECE 237\ARM\CMSIS\6.1.0\CMSIS\Core\Include" -I"C:\Users\Coo
+ki\OneDrive\Desktop\EECE 237\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123" --pred
+efine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 540" --predefine="TM4
+C123GH6PM SETA 1" --predefine="_RTE_ SETA 1" --list=.\display.lst display.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+DATA 00000000
+
+Symbol: DATA
+   Definitions
+      At line 18 in file display.s
+   Uses
+      None
+Comment: DATA unused
+FIFTHSEC 00000008
+
+Symbol: FIFTHSEC
+   Definitions
+      At line 24 in file display.s
+   Uses
+      None
+Comment: FIFTHSEC unused
+ONESEC 00000000
+
+Symbol: ONESEC
+   Definitions
+      At line 22 in file display.s
+   Uses
+      At line 132 in file display.s
+Comment: ONESEC used once
+QUARTERSEC 00000004
+
+Symbol: QUARTERSEC
+   Definitions
+      At line 23 in file display.s
+   Uses
+      None
+Comment: QUARTERSEC unused
+4 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+.text 00000000
+
+Symbol: .text
+   Definitions
+      At line 42 in file display.s
+   Uses
+      None
+Comment: .text unused
+Start 00000000
+
+Symbol: Start
+   Definitions
+      At line 48 in file display.s
+   Uses
+      At line 44 in file display.s
+Comment: Start used once
+d 00000084
+
+Symbol: d
+   Definitions
+      At line 134 in file display.s
+   Uses
+      At line 135 in file display.s
+Comment: d used once
+delay 00000080
+
+Symbol: delay
+   Definitions
+      At line 131 in file display.s
+   Uses
+      At line 92 in file display.s
+      At line 98 in file display.s
+      At line 103 in file display.s
+      At line 108 in file display.s
+      At line 114 in file display.s
+      At line 115 in file display.s
+      At line 116 in file display.s
+      At line 117 in file display.s
+      At line 118 in file display.s
+
+loop 00000028
+
+Symbol: loop
+   Definitions
+      At line 81 in file display.s
+   Uses
+      At line 122 in file display.s
+Comment: loop used once
+5 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Absolute symbols
+
+GPIO_PORTF_DATA_R 400253FC
+
+Symbol: GPIO_PORTF_DATA_R
+   Definitions
+      At line 28 in file display.s
+   Uses
+      At line 86 in file display.s
+Comment: GPIO_PORTF_DATA_R used once
+GPIO_PORTF_DEN_R 4002551C
+
+Symbol: GPIO_PORTF_DEN_R
+   Definitions
+      At line 30 in file display.s
+   Uses
+      At line 65 in file display.s
+Comment: GPIO_PORTF_DEN_R used once
+GPIO_PORTF_DIR_R 40025400
+
+Symbol: GPIO_PORTF_DIR_R
+   Definitions
+      At line 29 in file display.s
+   Uses
+      At line 71 in file display.s
+Comment: GPIO_PORTF_DIR_R used once
+SYSCTL_RCGCGPIO_R 400FE608
+
+Symbol: SYSCTL_RCGCGPIO_R
+   Definitions
+      At line 36 in file display.s
+   Uses
+      At line 54 in file display.s
+Comment: SYSCTL_RCGCGPIO_R used once
+SYSCTL_SCGC2_R 400FE118
+
+Symbol: SYSCTL_SCGC2_R
+   Definitions
+      At line 34 in file display.s
+   Uses
+      None
+Comment: SYSCTL_SCGC2_R unused
+5 symbols
+350 symbols in table
